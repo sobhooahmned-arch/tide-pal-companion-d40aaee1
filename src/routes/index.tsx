@@ -175,9 +175,8 @@ function LoginPanel({ onDone }: { onDone: (user: StoredUser) => void }) {
         return setError("يوجد حساب بهذا البيان بالفعل. سجّل دخولك بدلًا من ذلك.");
       createAccount({ identifier: v, method, name: name.trim(), password });
       setError(null);
-      setInfo("تم إنشاء حسابك بنجاح. سجّل دخولك الآن.");
-      setMode("login");
-      setPassword("");
+      setInfo(null);
+      login(v);
       return;
     }
 
@@ -193,7 +192,7 @@ function LoginPanel({ onDone }: { onDone: (user: StoredUser) => void }) {
       </h1>
       <p className="mt-1 text-sm text-muted-foreground">
         {mode === "signup"
-          ? "أنشئ حسابك الجديد، وبعدها سجّل دخولك من خانة تسجيل الدخول."
+          ? "أنشئ حسابك الجديد وهتدخل على المنصة على طول."
           : "سيتم حفظ دخولك على هذا الجهاز، فلن نطلبه مرة أخرى."}
       </p>
 
