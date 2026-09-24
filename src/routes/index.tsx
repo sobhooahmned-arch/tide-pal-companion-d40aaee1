@@ -175,9 +175,8 @@ function LoginPanel({ onDone }: { onDone: (user: StoredUser) => void }) {
         return setError("يوجد حساب بهذا البيان بالفعل. سجّل دخولك بدلًا من ذلك.");
       createAccount({ identifier: v, method, name: name.trim(), password });
       setError(null);
-      setInfo("تم إنشاء حسابك بنجاح. سجّل دخولك الآن.");
-      setMode("login");
-      setPassword("");
+      setInfo(null);
+      login(v);
       return;
     }
 
