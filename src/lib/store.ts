@@ -124,6 +124,13 @@ export function setRequestStatus(id: string, status: "approved" | "rejected") {
   );
 }
 
+export function deleteRequest(id: string) {
+  write(
+    REQUESTS_KEY,
+    getRequests().filter((r) => r.id !== id),
+  );
+}
+
 export const DEPOSIT_BAN_MS = 15 * 60 * 1000;
 
 /** طلب إيداع قيد المراجعة للمستخدم (إن وجد) */
