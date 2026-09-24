@@ -1,7 +1,8 @@
 // @lovable.dev/vite-tanstack-config already includes the following — do NOT add them manually
 // or the app will break with duplicate plugins.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
-import { obfuscator } from "vite-plugin-javascript-obfuscator";
+import obfuscatorPkg from "vite-plugin-javascript-obfuscator";
+const obfuscator: any = (obfuscatorPkg as any).default ?? obfuscatorPkg;
 
 const isProd = process.env.NODE_ENV === "production";
 
