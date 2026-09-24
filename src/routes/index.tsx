@@ -139,6 +139,17 @@ function LoginPanel({ onDone }: { onDone: (user: StoredUser) => void }) {
   const [info, setInfo] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  useEffect(() => {
+    const last = getLastLogin();
+    if (last) {
+      setMode("login");
+      setMethod(last.method);
+      setValue(last.identifier);
+      setName(last.name);
+      setPassword(last.password ?? "");
+    }
+  }, []);
+
   function login(v: string) {
     const account = findAccount(v);
     if (!account) return setError("لا يوجد حساب بهذا البيان. أنشئ حسابًا أولاً.");
@@ -146,6 +157,7 @@ function LoginPanel({ onDone }: { onDone: (user: StoredUser) => void }) {
       return setError("كلمة المرور غير صحيحة لهذا الحساب.");
     setError(null);
     setBusy(true);
+    saveLastLogin({ identifier: account.identifier, method: account.method, name: account.name, password });
     window.setTimeout(
       () =>
         onDone({
