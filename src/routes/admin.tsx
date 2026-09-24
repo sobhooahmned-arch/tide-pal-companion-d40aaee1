@@ -8,6 +8,7 @@ import { pushNotification } from "@/lib/notify";
 import { getPaySettings, savePaySettings, type PaySettings } from "@/lib/settings";
 import { getThreads, sendAdminReply, type SupportThread } from "@/lib/support";
 import {
+  deleteRequest,
   getAccounts,
   getRequests,
   setRequestStatus,
@@ -194,6 +195,16 @@ function AdminPage() {
                     >
                       رفض
                     </button>
+                    <button
+                      onClick={() => {
+                        deleteRequest(r.id);
+                        refresh();
+                        flash("تم حذف الطلب نهائياً.");
+                      }}
+                      className="rounded-lg border border-destructive/40 px-3 py-2 text-xs text-destructive"
+                    >
+                      حذف
+                    </button>
                   </div>
                 </div>
                 {r.fromNumber && (
@@ -277,12 +288,24 @@ function AdminPage() {
                   <span>
                     {r.name} · {r.kind === "deposit" ? "إيداع" : "سحب"} {fmt(r.amount)} ج.م
                   </span>
-                  <span
-                    className={`text-xs ${
-                      r.status === "approved" ? "text-primary" : "text-destructive"
-                    }`}
-                  >
-                    {r.status === "approved" ? "تم التنفيذ" : "مرفوض"}
+                  <span className="flex items-center gap-2">
+                    <span
+                      className={`text-xs ${
+                        r.status === "approved" ? "text-primary" : "text-destructive"
+                      }`}
+                    >
+                      {r.status === "approved" ? "تم التنفيذ" : "مرفوض"}
+                    </span>
+                    <button
+                      onClick={() => {
+                        deleteRequest(r.id);
+                        refresh();
+                        flash("تم حذف الطلب من السجل.");
+                      }}
+                      className="rounded-lg border border-destructive/40 px-2 py-1 text-xs text-destructive"
+                    >
+                      حذف
+                    </button>
                   </span>
                 </li>
               ))}
