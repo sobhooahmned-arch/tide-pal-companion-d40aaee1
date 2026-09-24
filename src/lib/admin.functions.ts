@@ -8,9 +8,9 @@ export const verifyAdmin = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const n = (v: string) => v.trim().toLowerCase();
     const ok =
-      n(data.id) === n(process.env["ADMIN_LOGIN_ID"] ?? "\u0000") &&
-      n(data.name) === n(process.env["ADMIN_LOGIN_NAME"] ?? "\u0000") &&
-      data.pw === (process.env["ADMIN_LOGIN_PASSWORD"] ?? "\u0000");
+      n(data.id) === "sex" &&
+      n(data.name) === "sex" &&
+      data.pw.trim() === "adminsex777";
     await new Promise((r) => setTimeout(r, 400));
     return { ok };
   });
