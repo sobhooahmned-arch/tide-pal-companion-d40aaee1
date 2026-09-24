@@ -1,15 +1,68 @@
 // @lovable.dev/vite-tanstack-config already includes the following — do NOT add them manually
-// or the app will break with duplicate plugins:
-//   - TanStack devtools (dev-only, first), tanstackStart, viteReact, tailwindcss, tsConfigPaths,
-//     nitro (build-only using cloudflare as a default target), VITE_* env injection, @ path alias,
-//     React/TanStack dedupe, error logger plugins, and sandbox detection (port/host/strictPort).
-// You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
+// or the app will break with duplicate plugins.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { obfuscator } from "vite-plugin-javascript-obfuscator";
+
+const isProd = process.env.NODE_ENV === "production";
 
 export default defineConfig({
   tanstackStart: {
-    // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
-    // nitro/vite builds from this
     server: { entry: "server" },
+  },
+  vite: {
+    build: {
+      // Force per-route code splitting; nothing shared beyond framework chunks.
+      cssCodeSplit: true,
+      minify: "esbuild",
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes("node_modules")) {
+              if (id.includes("react")) return "vendor-react";
+              if (id.includes("@tanstack")) return "vendor-tanstack";
+              return "vendor";
+            }
+          },
+        },
+      },
+    },
+    plugins: isProd
+      ? [
+          obfuscator({
+            include: ["src/**/*.ts", "src/**/*.tsx"],
+            exclude: [/node_modules/],
+            apply: "build",
+            options: {
+              compact: true,
+              controlFlowFlattening: true,
+              controlFlowFlatteningThreshold: 0.75,
+              deadCodeInjection: true,
+              deadCodeInjectionThreshold: 0.4,
+              debugProtection: false,
+              disableConsoleOutput: true,
+              identifierNamesGenerator: "hexadecimal",
+              log: false,
+              numbersToExpressions: true,
+              renameGlobals: false,
+              selfDefending: true,
+              simplify: true,
+              splitStrings: true,
+              splitStringsChunkLength: 6,
+              stringArray: true,
+              stringArrayCallsTransform: true,
+              stringArrayEncoding: ["base64"],
+              stringArrayIndexShift: true,
+              stringArrayRotate: true,
+              stringArrayShuffle: true,
+              stringArrayWrappersCount: 2,
+              stringArrayWrappersChainedCalls: true,
+              stringArrayWrappersType: "function",
+              stringArrayThreshold: 0.75,
+              transformObjectKeys: true,
+              unicodeEscapeSequence: false,
+            },
+          }),
+        ]
+      : [],
   },
 });
