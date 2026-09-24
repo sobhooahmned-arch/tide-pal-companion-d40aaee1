@@ -35,6 +35,16 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
+type TabKey = "stats" | "requests" | "users" | "support" | "pay" | "history";
+const TABS: { key: TabKey; label: string }[] = [
+  { key: "stats", label: "الإحصائيات" },
+  { key: "requests", label: "الطلبات" },
+  { key: "users", label: "المستخدمين" },
+  { key: "support", label: "الدعم الفني" },
+  { key: "pay", label: "بيانات التحويل" },
+  { key: "history", label: "السجل" },
+];
+
 function AdminPage() {
   const navigate = useNavigate();
   const [ready, setReady] = useState(false);
@@ -42,6 +52,7 @@ function AdminPage() {
   const [requests, setRequests] = useState<MoneyRequest[]>([]);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [notice, setNotice] = useState<string | null>(null);
+  const [tab, setTab] = useState<TabKey>("stats");
 
   const refresh = useCallback(() => {
     setAccounts(getAccounts());
@@ -129,14 +140,28 @@ function AdminPage() {
           </p>
         )}
 
+        <nav className="sticky top-[61px] z-10 -mx-4 mb-5 flex gap-2 overflow-x-auto border-b border-border bg-background/85 px-4 py-2 backdrop-blur">
+          {TABS.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className={`shrink-0 rounded-xl px-4 py-2 text-sm font-bold transition ${
+                tab === t.key
+                  ? "bg-primary text-primary-foreground"
+                  : "border border-border text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t.label}
+              {t.key === "requests" && pending.length > 0 && ` (${pending.length})`}
+            </button>
+          ))}
+        </nav>
+
+        {tab === "stats" && (<>
         <AdminStats accounts={accounts} requests={requests} subscriptions={subscriptions} />
 
-        <div className="mt-8">
-          <PaySettingsCard onSaved={() => flash("تم حفظ بيانات التحويل.")} />
-        </div>
-
-        <SupportSection onReplied={() => flash("تم إرسال الرد للمستخدم.")} />
-
+        </>)}
+        {tab === "requests" && (<div className="-mt-8">
         <h2 className="mt-8 text-lg font-bold">طلبات في انتظار المراجعة ({pending.length})</h2>
         {pending.length === 0 ? (
           <p className="mt-2 text-sm text-muted-foreground">لا توجد طلبات حالياً.</p>
@@ -196,6 +221,8 @@ function AdminPage() {
           </ul>
         )}
 
+        </div>)}
+        {tab === "users" && (<div className="-mt-8">
         <h2 className="mt-8 text-lg font-bold">حسابات المستخدمين ({accounts.length})</h2>
         {accounts.length === 0 ? (
           <p className="mt-2 text-sm text-muted-foreground">لا يوجد مستخدمون مسجلون بعد.</p>
@@ -226,7 +253,19 @@ function AdminPage() {
           </ul>
         )}
 
-        {history.length > 0 && (
+        </div>)}
+        {tab === "support" && (<div className="-mt-8">
+        <SupportSection onReplied={() => flash("تم إرسال الرد للمستخدم.")} />
+
+        </div>)}
+        {tab === "pay" && (<div className="-mt-8">
+        <div className="mt-8">
+          <PaySettingsCard onSaved={() => flash("تم حفظ بيانات التحويل.")} />
+        </div>
+
+        </div>)}
+        {tab === "history" && (<div className="-mt-8">
+        {history.length === 0 ? (<p className="mt-10 text-sm text-muted-foreground">لا يوجد سجل بعد.</p>) : (
           <>
             <h2 className="mt-8 text-lg font-bold">سجل الطلبات</h2>
             <ul className="mt-3 space-y-2">
@@ -250,6 +289,7 @@ function AdminPage() {
             </ul>
           </>
         )}
+        </div>)}
       </div>
     </main>
   );
