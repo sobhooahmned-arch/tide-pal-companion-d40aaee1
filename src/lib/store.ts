@@ -1,6 +1,4 @@
-export const ADMIN_ID = "aa";
-export const ADMIN_PASSWORD = "Aa642008Aa#";
-export const ADMIN_NAME = "aa";
+export const ADMIN_ID = "admin";
 
 export type Account = {
   identifier: string;
