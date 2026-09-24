@@ -4,7 +4,7 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import obfuscatorPkg from "vite-plugin-javascript-obfuscator";
 const obfuscator: any = (obfuscatorPkg as any).default ?? obfuscatorPkg;
 
-const isProd = process.env.NODE_ENV === "production";
+const isProd = process.env['NODE_ENV'] === "production";
 
 export default defineConfig({
   tanstackStart: {
@@ -23,6 +23,7 @@ export default defineConfig({
               if (id.includes("@tanstack")) return "vendor-tanstack";
               return "vendor";
             }
+            return undefined;
           },
         },
       },
