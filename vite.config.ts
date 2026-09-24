@@ -14,7 +14,6 @@ export default defineConfig({
     build: {
       // Force per-route code splitting; nothing shared beyond framework chunks.
       cssCodeSplit: true,
-      minify: "esbuild",
       rollupOptions: {
         output: {
           manualChunks(id) {
