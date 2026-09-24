@@ -2,7 +2,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { ShieldCheck } from "lucide-react";
 import { storeUser } from "@/lib/auth";
-import { ADMIN_ID, ADMIN_NAME, ADMIN_PASSWORD, norm } from "@/lib/store";
+import { ADMIN_ID } from "@/lib/store";
+import { verifyAdmin } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/adminop")({
   head: () => ({
@@ -27,13 +28,15 @@ function AdminGate() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (norm(id) !== ADMIN_ID || norm(name) !== ADMIN_NAME || pw !== ADMIN_PASSWORD) {
+    setBusy(true);
+    const res = await verifyAdmin({ data: { id, name, pw } }).catch(() => ({ ok: false }));
+    if (!res.ok) {
+      setBusy(false);
       setError("بيانات الدخول غير صحيحة.");
       return;
     }
-    setBusy(true);
     storeUser({
       identifier: ADMIN_ID,
       method: "email",
